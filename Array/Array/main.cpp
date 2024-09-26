@@ -4,21 +4,10 @@
 
 int main()
 {
-    std::cout << "main-begin\n";
-    Array arr;
-
-    try
-    {
-
-        int a = arr[3];
-        arr[4] = a;
-        arr[0] = arr[5];
-    }
-    catch (...)
-    {
-        std::cout << "main-catch: ?" << "\n";
-    }
-
-    std::cout << "main-end\n";
+    std::cout << "main begin \n";
+    Array a, b;
+    Array c = a += b;
+    Array f = std::move(b);
+    std::cout << "main end \n";
     return 0;
 }
