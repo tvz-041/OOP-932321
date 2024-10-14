@@ -10,12 +10,24 @@ template <typename ItemType>
 class Array
 {
 public:
+    typedef ItemType* iterator;
+    typedef ItemType value_type;
+    typedef ItemType& reference;
+    typedef ItemType* pointer;
+    typedef int difference_type;
+    
+public:
     Array(int size = 10);
     Array(const Array& other);
     Array(Array&& other);
     ~Array();
     
     int size() const;
+    
+    iterator begin();
+    iterator end();
+    const iterator begin() const;
+    const iterator end() const;
 
     bool insert(const int index, const ItemType& value);
     void swap(Array& other) noexcept;
@@ -97,6 +109,30 @@ template <typename ItemType>
 int Array<ItemType>::size() const
 {
     return m_size;
+}
+
+template <typename ItemType> typename
+Array<ItemType>::iterator Array<ItemType>::begin()
+{
+    return m_array;
+}
+
+template <typename ItemType> typename
+Array<ItemType>::iterator Array<ItemType>::end()
+{
+    return m_array + m_size;
+}
+
+template <typename ItemType>
+const typename Array<ItemType>::iterator Array<ItemType>::begin() const
+{
+    return m_array;
+}
+
+template <typename ItemType>
+const typename Array<ItemType>::iterator Array<ItemType>::end() const
+{
+    return m_array + m_size;
 }
 
 template <typename ItemType>
