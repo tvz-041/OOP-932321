@@ -6,9 +6,22 @@ template <typename T>
 class List
 {
     struct Node;
+
+public:
+    template <typename ItemType>
+    class TemplateIterator;
+    using iterator = TemplateIterator<T>;
+    using const_iterator = TemplateIterator<const T>;
+
 public:
     List();
     ~List();
+
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
+
     int size() const;
     void clear();
     void append(const T& value);
@@ -32,6 +45,27 @@ struct List<T>::Node
 };
 
 
+template <typename T>
+template <typename ItemType>
+class List<T>::TemplateIterator
+{
+public:
+    TemplateIterator(Node* node);
+
+    ItemType& operator*();
+    const ItemType& operator*() const;
+    TemplateIterator operator++();
+    TemplateIterator operator--();
+    TemplateIterator operator++(int);
+    TemplateIterator operator--(int);
+    bool operator==(const TemplateIterator& other) const;
+    bool operator!=(const TemplateIterator& other) const;
+
+protected:
+    Node* m_node = nullptr;
+};
+
+
 
 template <typename T>
 List<T>::List()
@@ -48,6 +82,30 @@ List<T>::~List()
     clear();
     delete m_head;
     delete m_tail;
+}
+
+template <typename T> typename
+List<T>::iterator List<T>::begin()
+{
+    return iterator(m_head->next);
+}
+
+template <typename T> typename
+List<T>::iterator List<T>::end()
+{
+    return iterator(m_tail);
+}
+
+template <typename T>
+typename List<T>::const_iterator List<T>::begin() const
+{
+    return const_iterator(m_head->next);
+}
+
+template <typename T>
+typename List<T>::const_iterator List<T>::end() const
+{
+    return const_iterator(m_tail);
 }
 
 template <typename T>
@@ -88,9 +146,25 @@ void List<T>::append(const T& value)
 template <typename T>
 void List<T>::print() const
 {
-    for (Node* runner = m_head->next; runner != m_tail; runner = runner->next)
+    /*
+        // C-style print
+        for (Node* it = m_head->next; it != m_tail; it = it->next)
+        {
+            std::cout << it->value << ' ';
+        }
+        std::cout << "\n";
+
+        // Print with iterator
+        for (const_iterator it = begin(); it != end(); ++it)
+        {
+            std::cout << *it << ' ';
+        }
+        std::cout << "\n";
+    */
+    // Print with range-based for
+    for (const T& value : *this)
     {
-        std::cout << runner->value << ' ';
+        std::cout << value << ' ';
     }
     std::cout << "\n";
 }
@@ -107,3 +181,75 @@ List<T>::Node::Node(const T& value, Node* next, Node* prev)
     , next(next)
     , prev(prev)
 {}
+
+template <typename T>
+template <typename ItemType>
+List<T>::TemplateIterator<ItemType>::TemplateIterator(Node* node)
+    : m_node(node)
+{}
+
+template <typename T>
+template <typename ItemType>
+ItemType& List<T>::TemplateIterator<ItemType>::operator*()
+{
+    return m_node->value;
+}
+
+template <typename T>
+template <typename ItemType>
+const ItemType& List<T>::TemplateIterator<ItemType>::operator*() const
+{
+    return m_node->value;
+}
+
+template <typename T>
+template <typename ItemType>
+typename List<T>::template
+TemplateIterator<ItemType> List<T>::TemplateIterator<ItemType>::operator++()
+{
+    m_node = m_node->next;
+    return *this;
+}
+
+template <typename T>
+template <typename ItemType>
+typename List<T>::template
+TemplateIterator<ItemType> List<T>::TemplateIterator<ItemType>::operator--()
+{
+    m_node = m_node->prev;
+    return *this;
+}
+
+template <typename T>
+template <typename ItemType>
+typename List<T>::template
+TemplateIterator<ItemType> List<T>::TemplateIterator<ItemType>::operator++(int)
+{
+    TemplateIterator old = *this;
+    m_node = m_node->next;
+    return old;
+}
+
+template <typename T>
+template <typename ItemType>
+typename List<T>::template
+TemplateIterator<ItemType> List<T>::TemplateIterator<ItemType>::operator--(int)
+{
+    TemplateIterator old = *this;
+    m_node = m_node->prev;
+    return old;
+}
+
+template <typename T>
+template <typename ItemType>
+bool List<T>::TemplateIterator<ItemType>::operator==(const TemplateIterator& other) const
+{
+    return (m_node == other.m_node);
+}
+
+template <typename T>
+template <typename ItemType>
+bool List<T>::TemplateIterator<ItemType>::operator!=(const TemplateIterator& other) const
+{
+    return (m_node != other.m_node);
+}

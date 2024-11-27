@@ -13,6 +13,7 @@ int main()
     list.append("bobao");
     list.append("pshh-pshh");
     list.print();
+    ++list.begin();
 
     return 0;
 }
