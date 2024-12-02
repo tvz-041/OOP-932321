@@ -50,6 +50,12 @@ template <typename ItemType>
 class List<T>::TemplateIterator
 {
 public:
+    using value_type = ItemType;
+    using reference = ItemType&;
+    using pointer = ItemType*;
+    using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type = int;
+
     TemplateIterator(Node* node);
 
     ItemType& operator*();
