@@ -4,8 +4,6 @@
 #include <iostream>
 #include <utility>
 
-#undef DEBUG_OUTPUT
-
 template <typename ItemType>
 class Array
 {
@@ -47,9 +45,6 @@ private:
 template <typename ItemType>
 Array<ItemType>::Array(int size)
 {
-#ifdef DEBUG_OUTPUT
-    std::cout << this << ": " << "Array::Array() \n";
-#endif // DEBUG_OUTPUT
     if (size < 0)
     {
         size = -size;
@@ -60,36 +55,22 @@ Array<ItemType>::Array(int size)
     {
         m_array[i] = ItemType();
     }
-#ifdef DEBUG_OUTPUT
-    std::cout << "m_array: " << m_array << " \n";
-#endif // DEBUG_OUTPUT
 }
 
 template <typename ItemType>
 Array<ItemType>::Array(const Array& other)
 {
-#ifdef DEBUG_OUTPUT
-    std::cout << this << ": " << "Array::Array(const Array& other) \n";
-    std::cout << "other: " << &other << " \n";
-#endif // DEBUG_OUTPUT
     m_size = other.m_size;
     m_array = new ItemType[m_size];
     for (int i = 0; i < m_size; i++)
     {
         m_array[i] = other.m_array[i];
     }
-#ifdef DEBUG_OUTPUT
-    std::cout << "m_array: " << m_array << " \n";
-#endif // DEBUG_OUTPUT
 }
 
 template <typename ItemType>
 Array<ItemType>::Array(Array&& other)
 {
-#ifdef DEBUG_OUTPUT
-    std::cout << this << ": " << "Array::Array(Array&& other) \n";
-    std::cout << "other: " << &other << " \n";
-#endif // DEBUG_OUTPUT
     m_size = other.m_size;
     m_array = other.m_array;
     other.m_array = nullptr;
@@ -98,10 +79,6 @@ Array<ItemType>::Array(Array&& other)
 template <typename ItemType>
 Array<ItemType>::~Array()
 {
-#ifdef DEBUG_OUTPUT
-    std::cout << this << ": " << "Array::~Array() \n";
-    std::cout << "m_array: " << m_array << " \n";
-#endif // DEBUG_OUTPUT
     delete[] m_array;
 }
 
@@ -194,10 +171,6 @@ void Array<ItemType>::swap(Array& other) noexcept
 template <typename ItemType>
 Array<ItemType>& Array<ItemType>::operator=(const Array& other)
 {
-#ifdef DEBUG_OUTPUT
-    std::cout << this << ": " << "Array::operator=(const Array& other) begin \n";
-    std::cout << "other: " << &other << " \n";
-#endif // DEBUG_OUTPUT
     if (m_size == other.m_size)
     {
         for (int i = 0; i < m_size; ++i)
@@ -211,19 +184,13 @@ Array<ItemType>& Array<ItemType>::operator=(const Array& other)
         swap(copy);
     }
 
-#ifdef DEBUG_OUTPUT
-    std::cout << this << ": " << "Array::operator=(const Array& other) end \n";
-#endif // DEBUG_OUTPUT
     return *this;
 }
 
 template <typename ItemType>
 Array<ItemType>& Array<ItemType>::operator=(Array&& other) noexcept
 {
-    std::cout << this << ": " << "Array::operator=(Array&& other) begin \n";
-    std::cout << "other: " << &other << " \n";
-    swap(other); 
-    std::cout << this << ": " << "Array::operator=(Array&& other) end \n";
+    swap(other);
     return *this;
 }
 
@@ -244,10 +211,6 @@ const ItemType& Array<ItemType>::operator[](int index) const
 template <typename ItemType>
 Array<ItemType> Array<ItemType>::operator+(const Array& other) const
 {
-#ifdef DEBUG_OUTPUT
-    std::cout << this << ": " << "Array::operator+(const Array& other) begin \n";
-    std::cout << "other: " << &other << " \n";
-#endif // DEBUG_OUTPUT
     Array result(m_size + other.m_size);
     for (int i = 0; i < m_size; ++i)
     {
@@ -257,9 +220,6 @@ Array<ItemType> Array<ItemType>::operator+(const Array& other) const
     {
         result[m_size + i] = other[i];
     }
-#ifdef DEBUG_OUTPUT
-    std::cout << this << ": " << "Array::operator+(const Array& other) end \n";
-#endif // DEBUG_OUTPUT
     return result;
 }
 
