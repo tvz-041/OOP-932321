@@ -23,9 +23,6 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
-    QLineF _drawLinePos() const;
-
-private:
     int m_length = 5;
     int m_thickness = 1;
     Qt::Orientation m_orientation;

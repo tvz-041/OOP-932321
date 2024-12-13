@@ -26,24 +26,27 @@ void MapWidget::clear()
     m_scene->clear();
     m_model.clear();
 
-    int offset = m_borderThickness / 2.0;
+    int offset = 0;
+    int offsetDiff = m_cellSize + m_borderThickness;
 
-    for (int y = 0; y < m_model.rowCount(); ++y)
+    // Смещение по строкам - координата Y
+    // Смещение по столбцам - координата X
+    for (int row = 0; row < m_model.rowCount(); ++row)
     {
-        for (int x = 0; x < m_model.columnCount(); ++x)
+        for (int col = 0; col < m_model.columnCount(); ++col)
         {
-            _addBorder(offset + m_cellSize * x, offset + m_cellSize * y, Qt::Horizontal);
+            _addBorder(offset + offsetDiff * col, offset + offsetDiff * row, Qt::Horizontal);
         }
 
-        for (int x = 0; x <= m_model.columnCount(); ++x)
+        for (int col = 0; col <= m_model.columnCount(); ++col)
         {
-            _addBorder(offset + m_cellSize * x, offset + m_cellSize * y, Qt::Vertical);
+            _addBorder(offset + offsetDiff * col, offset + offsetDiff * row, Qt::Vertical);
         }
     }
 
-    for (int x = 0; x < m_model.columnCount(); ++x)
+    for (int col = 0; col < m_model.columnCount(); ++col)
     {
-        _addBorder(offset + m_cellSize * x, offset + m_cellSize * m_model.rowCount(), Qt::Horizontal);
+        _addBorder(offset + offsetDiff * col, offset + offsetDiff * m_model.rowCount(), Qt::Horizontal);
     }
 }
 

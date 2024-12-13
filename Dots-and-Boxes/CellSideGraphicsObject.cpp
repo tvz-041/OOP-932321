@@ -42,23 +42,31 @@ QRectF CellSideGraphicsObject::boundingRect() const
 {
     if (m_orientation == Qt::Horizontal)
     {
-        return QRectF(0, -m_thickness / 2.0, m_length, m_thickness);
+        return QRectF(0, 0, m_length + m_thickness * 2, m_thickness);
     }
     else
     {
-        return QRectF(-m_thickness / 2.0, 0, m_thickness, m_length);
+        return QRectF(0, 0, m_thickness, m_length + m_thickness * 2);
     }
 }
 
 void CellSideGraphicsObject::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/)
 {
-    QPen pen(QBrush(m_color), m_thickness);
+    QPen pen(m_color);
     painter->setPen(pen);
-    painter->drawLine(_drawLinePos());
+    painter->fillRect(boundingRect(), QBrush(m_color));
+
     pen.setColor(Qt::black);
+    pen.setWidth(m_thickness);
     painter->setPen(pen);
-    painter->drawPoint(_drawLinePos().p1());
-    painter->drawPoint(_drawLinePos().p2());
+    painter->drawPoint(
+        boundingRect().left() + m_thickness / 2.0,
+        boundingRect().top() + m_thickness / 2.0
+    );
+    painter->drawPoint(
+        boundingRect().right() - m_thickness / 2.0,
+        boundingRect().bottom() - m_thickness / 2.0
+    );
 }
 
 void CellSideGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
@@ -88,16 +96,4 @@ void CellSideGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     setColor(Qt::blue);
     QGraphicsObject::mouseReleaseEvent(event);
-}
-
-QLineF CellSideGraphicsObject::_drawLinePos() const
-{
-    if (m_orientation == Qt::Horizontal)
-    {
-        return QLineF(0, 0, m_length, 0);
-    }
-    else
-    {
-        return QLineF(0, 0, 0, m_length);
-    }
 }
