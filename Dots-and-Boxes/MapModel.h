@@ -2,6 +2,16 @@
 
 #include <vector>
 
+/**
+ * @brief Модель игровой карты.
+ * С точки зрения модели достаточно хранить информацию о том,
+ * какая палочка/ячейка кому принадлежит:
+ * -1: внешняя граница (не может принадлежать никому);
+ * 0: пока никому не принадлежит;
+ * 1: принадлежит игроку №1;
+ * 2: принадлежит игроку №2;
+ * и т.д.
+ */
 class MapModel
 {
 public:
@@ -18,20 +28,16 @@ public:
     int columnCount() const;
 
     /**
-     * @brief setHorizontalSideOwner
-     * @param row
-     * @param column
-     * @param owner
-     * @return count of captured cells
+     * @brief Меняет владельца горизонтальной палочки, если это допустимо
+     * (текущего владельца нет и его в принципе можно задать для этой палочки).
+     * Возвращает количество ячеек, захваченных в результате закраса палочки.
      */
     int setHorizontalSideOwner(int row, int column, int owner);
 
     /**
-     * @brief setVerticalSideOwner
-     * @param row
-     * @param column
-     * @param owner
-     * @return count of captured cells
+     * @brief Меняет владельца вертикальной палочки, если это допустимо
+     * (текущего владельца нет и его в принципе можно задать для этой палочки).
+     * Возвращает количество ячеек, захваченных в результате закраса палочки.
      */
     int setVerticalSideOwner(int row, int column, int owner);
 

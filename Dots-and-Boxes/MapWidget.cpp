@@ -1,5 +1,7 @@
 #include <QDebug>
 
+#include "CellSideGraphicsObject.h"
+
 #include "MapWidget.h"
 
 MapWidget::MapWidget(QWidget *parent)
@@ -22,7 +24,6 @@ void MapWidget::setVisible(bool visible)
 
 void MapWidget::clear()
 {
-    m_sides.clear();
     m_scene->clear();
     m_model.clear();
 
@@ -50,6 +51,11 @@ void MapWidget::clear()
     }
 }
 
+void MapWidget::onCellSideClicked()
+{
+    qDebug() << "Cell side clicked!";
+}
+
 void MapWidget::resizeEvent(QResizeEvent *event)
 {
     QGraphicsView::resizeEvent(event);
@@ -58,11 +64,15 @@ void MapWidget::resizeEvent(QResizeEvent *event)
 
 void MapWidget::_updateSceneRect()
 {
+    // Подгоняет размер сцены под размер видимой части.
+    // Будет полезно для автомасштабирования, пока не требуется.
+#if 0
     m_scene->setSceneRect(QRect(
         0, 0,
         viewport()->width(),
         viewport()->height()
     ));
+#endif
 }
 
 void MapWidget::_addBorder(int x, int y, Qt::Orientation type)

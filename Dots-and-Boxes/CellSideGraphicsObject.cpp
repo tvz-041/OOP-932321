@@ -10,7 +10,10 @@ CellSideGraphicsObject::CellSideGraphicsObject(Qt::Orientation orientation, QGra
     : QGraphicsObject(parent)
     , m_orientation(orientation)
 {
+    // Разрешаем принимать события наведения мышкой (по умолчанию false)
     setAcceptHoverEvents(true);
+    // Разрешаем принимать только нажатия ЛКМ (по умолчанию разрешены все)
+    // (чтобы запретить всё, передать Qt::MouseButton::NoButton)
     setAcceptedMouseButtons(Qt::MouseButton::LeftButton);
 }
 
@@ -38,6 +41,14 @@ void CellSideGraphicsObject::setOrientation(Qt::Orientation orientation)
     update();
 }
 
+/**
+ * @brief Метод, возвращающий описывающий прямоугольник
+ * (прямоугольник, внутри которого содержится весь наш объект).
+ * Эта информация нужна для QGraphicsScene, чтобы она понимала,
+ * какую область нужно перерисовывать, если у объекта сработал метод update().
+ * В нашем случае палочка сама по себе есть прямоугольник, поэтому boundingRect()
+ * полностью совпадает с реальными кабаритами.
+ */
 QRectF CellSideGraphicsObject::boundingRect() const
 {
     if (m_orientation == Qt::Horizontal)
@@ -52,21 +63,24 @@ QRectF CellSideGraphicsObject::boundingRect() const
 
 void CellSideGraphicsObject::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/)
 {
+    // Рисуем саму линию в виде прямоугольника
     QPen pen(m_color);
     painter->setPen(pen);
-    painter->fillRect(boundingRect(), QBrush(m_color));
+    QRectF rect = boundingRect();
+    painter->fillRect(rect, QBrush(m_color));
 
+    // Палочки пересекаются на углах, поэтому для более красивого выделения
+    // лучше покрасить в чёрный цвет начало и окончание палочки.
+    // (можете закомментировать код ниже и посмотреть, что изменится).
+    // Т.к. нам нужно закрасить квадрать, можно просто задать толщину ручки
+    // и нарисовать точку в центре начала/окончания палочки.
     pen.setColor(Qt::black);
     pen.setWidth(m_thickness);
     painter->setPen(pen);
-    painter->drawPoint(
-        boundingRect().left() + m_thickness / 2.0,
-        boundingRect().top() + m_thickness / 2.0
-    );
-    painter->drawPoint(
-        boundingRect().right() - m_thickness / 2.0,
-        boundingRect().bottom() - m_thickness / 2.0
-    );
+    // У QPointF есть операции +-, поэтому смещение можно задать так:
+    QPointF offset = {m_thickness / 2.0, m_thickness / 2.0};
+    painter->drawPoint(rect.topLeft() + offset);
+    painter->drawPoint(rect.bottomRight() - offset);
 }
 
 void CellSideGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
@@ -96,4 +110,5 @@ void CellSideGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     setColor(Qt::blue);
     QGraphicsObject::mouseReleaseEvent(event);
+    emit clicked(); // Вызов сигнала
 }
