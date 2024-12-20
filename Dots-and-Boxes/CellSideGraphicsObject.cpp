@@ -6,15 +6,44 @@
 
 #include "CellSideGraphicsObject.h"
 
-CellSideGraphicsObject::CellSideGraphicsObject(Qt::Orientation orientation, QGraphicsItem *parent)
+CellSideGraphicsObject::CellSideGraphicsObject(int row, int column, Qt::Orientation orientation,
+                                               bool changeable, QGraphicsItem *parent)
     : QGraphicsObject(parent)
+    , m_row(row)
+    , m_column(column)
     , m_orientation(orientation)
+    , m_changeable(changeable)
 {
-    // Разрешаем принимать события наведения мышкой (по умолчанию false)
-    setAcceptHoverEvents(true);
-    // Разрешаем принимать только нажатия ЛКМ (по умолчанию разрешены все)
-    // (чтобы запретить всё, передать Qt::MouseButton::NoButton)
-    setAcceptedMouseButtons(Qt::MouseButton::LeftButton);
+    if (m_changeable)
+    {
+        m_baseColor = Qt::gray;
+        // Разрешаем принимать события наведения мышкой (по умолчанию false)
+        setAcceptHoverEvents(true);
+        // Разрешаем принимать только нажатия ЛКМ (по умолчанию разрешены все)
+        // (чтобы запретить всё, передать Qt::MouseButton::NoButton)
+        setAcceptedMouseButtons(Qt::MouseButton::LeftButton);
+    }
+    else
+    {
+        setAcceptedMouseButtons(Qt::MouseButton::NoButton);
+        setZValue(1.0); // Внешние палочки должны отрисовываться поверх внутренних
+    }
+    m_color = m_baseColor;
+}
+
+int CellSideGraphicsObject::row() const
+{
+    return m_row;
+}
+
+int CellSideGraphicsObject::column() const
+{
+    return m_column;
+}
+
+Qt::Orientation CellSideGraphicsObject::orientation() const
+{
+    return m_orientation;
 }
 
 void CellSideGraphicsObject::setLength(int length)
@@ -33,6 +62,11 @@ void CellSideGraphicsObject::setColor(const QColor &color)
 {
     m_color = color;
     update();
+}
+
+void CellSideGraphicsObject::setChangeable(bool changeable)
+{
+    m_changeable = changeable;
 }
 
 void CellSideGraphicsObject::setOrientation(Qt::Orientation orientation)
@@ -74,7 +108,7 @@ void CellSideGraphicsObject::paint(QPainter *painter, const QStyleOptionGraphics
     // (можете закомментировать код ниже и посмотреть, что изменится).
     // Т.к. нам нужно закрасить квадрать, можно просто задать толщину ручки
     // и нарисовать точку в центре начала/окончания палочки.
-    pen.setColor(Qt::black);
+    pen.setColor(m_baseColor);
     pen.setWidth(m_thickness);
     painter->setPen(pen);
     // У QPointF есть операции +-, поэтому смещение можно задать так:
@@ -86,15 +120,17 @@ void CellSideGraphicsObject::paint(QPainter *painter, const QStyleOptionGraphics
 void CellSideGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     QGraphicsObject::hoverEnterEvent(event);
-    if (m_color != Qt::blue) {
-        setColor(Qt::red);
+    if (m_changeable) {
+        QColor color = m_baseColor;
+        color.setAlphaF(0.70);
+        setColor(color);
     }
 }
 
 void CellSideGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    if (m_color != Qt::blue) {
-        setColor(Qt::black);
+    if (m_changeable) {
+        setColor(m_baseColor);
     }
     QGraphicsObject::hoverLeaveEvent(event);
 }
@@ -102,7 +138,11 @@ void CellSideGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 void CellSideGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsObject::mousePressEvent(event);
-    setColor(Qt::gray);
+    if (m_changeable) {
+        QColor color = m_baseColor;
+        color.setAlphaF(0.85);
+        setColor(color);
+    }
     event->accept();
 }
 
@@ -110,5 +150,5 @@ void CellSideGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     setColor(Qt::blue);
     QGraphicsObject::mouseReleaseEvent(event);
-    emit clicked(); // Вызов сигнала
+    emit clicked(this); // Вызов сигнала
 }

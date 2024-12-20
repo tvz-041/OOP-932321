@@ -55,24 +55,28 @@ int MapModel::columnCount() const
     return rowCount() ? m_cells[0].size() : 0;
 }
 
-int MapModel::setHorizontalSideOwner(int row, int column, int owner)
+bool MapModel::setHorizontalSideOwner(int row, int column, int owner)
 {
     if (owner <= 0 || !_isChangeableHorizontalSide(row, column)) {
-        return 0;
+        return false;
     }
 
     m_horizontalSides[row][column] = owner;
-    return _tryEncloseCell(row - 1, column, owner) + _tryEncloseCell(row, column, owner);
+    _tryEncloseCell(row - 1, column, owner);
+    _tryEncloseCell(row, column, owner);
+    return true;
 }
 
-int MapModel::setVerticalSideOwner(int row, int column, int owner)
+bool MapModel::setVerticalSideOwner(int row, int column, int owner)
 {
     if (owner <= 0 || !_isChangeableVerticalSide(row, column)) {
-        return 0;
+        return false;
     }
 
     m_verticalSides[row][column] = owner;
-    return _tryEncloseCell(row, column - 1, owner) + _tryEncloseCell(row, column, owner);
+    _tryEncloseCell(row, column - 1, owner);
+    _tryEncloseCell(row, column, owner);
+    return true;
 }
 
 bool MapModel::_isChangeableHorizontalSide(int row, int column) const

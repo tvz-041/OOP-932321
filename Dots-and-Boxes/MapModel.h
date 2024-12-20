@@ -30,16 +30,16 @@ public:
     /**
      * @brief Меняет владельца горизонтальной палочки, если это допустимо
      * (текущего владельца нет и его в принципе можно задать для этой палочки).
-     * Возвращает количество ячеек, захваченных в результате закраса палочки.
+     * Возвращает true, если владелец палочки был изменён.
      */
-    int setHorizontalSideOwner(int row, int column, int owner);
+    bool setHorizontalSideOwner(int row, int column, int owner);
 
     /**
      * @brief Меняет владельца вертикальной палочки, если это допустимо
      * (текущего владельца нет и его в принципе можно задать для этой палочки).
-     * Возвращает количество ячеек, захваченных в результате закраса палочки.
+     * Возвращает true, если владелец палочки был изменён.
      */
-    int setVerticalSideOwner(int row, int column, int owner);
+    bool setVerticalSideOwner(int row, int column, int owner);
 
 private:
     bool _isChangeableHorizontalSide(int row, int column) const;

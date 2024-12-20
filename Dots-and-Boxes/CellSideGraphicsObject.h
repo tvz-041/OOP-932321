@@ -5,15 +5,30 @@
 class CellSideGraphicsObject : public QGraphicsObject
 {
     Q_OBJECT
+
 public:
-    CellSideGraphicsObject(Qt::Orientation orientation, QGraphicsItem *parent = nullptr);
+    CellSideGraphicsObject(int row, int column, Qt::Orientation orientation,
+                           bool changeable = true, QGraphicsItem *parent = nullptr);
+
+    int row() const;
+    int column() const;
+    Qt::Orientation orientation() const;
 
     /**
-     * @brief Задаёт длину палочки. Реальная длина будет (length + thickness * 2).
+     * @brief Задаёт длину палочки в пикселях. Реальная длина будет (length + thickness * 2).
      */
     void setLength(int length);
+
+    /**
+     * @brief Задаёт толщину палочки в пикселях.
+     */
     void setThickness(int thickness);
     void setColor(const QColor &color);
+
+    /**
+     * @brief Разрешает/запрещает изменение цвета палочки.
+     */
+    void setChangeable(bool changeable);
     void setOrientation(Qt::Orientation orientation);
 
     QRectF boundingRect() const override;
@@ -30,7 +45,7 @@ public:
  * Если связать один сигнал с несколькими слотами - все они будут вызываться.
  */
 signals:
-    void clicked();
+    void clicked(CellSideGraphicsObject* side);
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -41,9 +56,13 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
+    int m_row = -1;
+    int m_column = -1;
     int m_length = 5;
     int m_thickness = 1;
     Qt::Orientation m_orientation;
-    QColor m_color = Qt::black;
+    bool m_changeable = true;
+    QColor m_baseColor = Qt::black;
+    QColor m_color;
 };
 
